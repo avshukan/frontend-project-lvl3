@@ -29,6 +29,10 @@ jobs:
       - name: Run a one-line script
         run: echo Hello, world!
       
+      # Installs 
+      - name: install
+        run: make install
+      
       # Runs eslint
       - name: eslint
         run: make lint
