@@ -1,5 +1,5 @@
 import { test, expect, describe } from '@jest/globals';
-import tmp from '../index.js';
+import tmp from '../src/index.js';
 
 describe('mock', () => {
   test('test', () => {
