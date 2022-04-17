@@ -5,8 +5,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest",
-    "webpack": "webpack"
+    "build": "webpack",
+    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest"
   },
   "repository": {
     "type": "git",
@@ -30,5 +30,8 @@
     "jest": "^27.5.1",
     "webpack": "^5.72.0",
     "webpack-cli": "^4.9.2"
+  },
+  "dependencies": {
+    "path": "^0.12.7"
   }
 }
