@@ -23,10 +23,6 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
       
       # Installs 
       - name: install
@@ -36,6 +32,7 @@ jobs:
       - name: eslint
         run: make lint
 
+      # Reports test-coverage with CodeClimate
       - name: test-coverage
         # Publish code coverage on Code Climate
         # https://github.com/paambaati/codeclimate-action
