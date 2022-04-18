@@ -1,5 +1,5 @@
 const init = (root) => {
-    root.textContent = `
+  root.textContent = `
     <div data-v-32478853="" class="odm_extension image_downloader_wrapper">
         <!---->
     </div>
@@ -62,8 +62,8 @@ const init = (root) => {
 };
 
 const app = () => {
-    const root = document.body;
-    init(root);
+  const root = document.body;
+  init(root);
 };
 
 export default app;

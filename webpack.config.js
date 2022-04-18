@@ -23,19 +23,19 @@ export default {
             loader: MiniCssExtractPlugin.loader,
           },
           'css-loader',
-        ]
-      }
-    ]
+        ],
+      },
+    ],
   },
   plugins: [
     new HtmlWebpackPlugin({
       template: 'index.html',
     }),
     new MiniCssExtractPlugin({
-      filename: "main.css",
+      filename: 'main.css',
     }),
     new CleanWebpackPlugin({
-      cleanOnceBeforeBuildPatterns: ['./dist/*.*']
+      cleanOnceBeforeBuildPatterns: ['./dist/*.*'],
     }),
   ],
 };
