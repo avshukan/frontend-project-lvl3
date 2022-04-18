@@ -22,34 +22,21 @@
   },
   "homepage": "https://github.com/avshukan/frontend-project-lvl3#readme",
   "devDependencies": {
-    "@babel/preset-env": "^7.16.11",
     "@jest/globals": "^27.5.1",
-    "babel-loader": "^8.2.4",
     "bootstrap": "^5.1.3",
-    "bootstrap-loader": "^3.0.4",
-    "bootstrap-sass": "^3.4.3",
+    "clean-webpack-plugin": "^4.0.0",
     "css-loader": "^6.7.1",
     "eslint": "^8.11.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-react": "^7.29.4",
-    "exports-loader": "^3.1.0",
     "html-webpack-plugin": "^5.5.0",
-    "imports-loader": "^3.1.1",
     "jest": "^27.5.1",
     "mini-css-extract-plugin": "^2.6.0",
-    "node-sass": "^7.0.1",
-    "postcss-loader": "^6.2.1",
-    "resolve-url-loader": "^5.0.0",
-    "sass": "^1.50.0",
-    "sass-loader": "^12.6.0",
-    "style-loader": "^3.3.1",
-    "url-loader": "^4.1.1",
     "webpack": "^5.72.0",
     "webpack-cli": "^4.9.2"
   },
   "dependencies": {
-    "clean-webpack-plugin": "^4.0.0",
     "path": "^0.12.7"
   }
 }
