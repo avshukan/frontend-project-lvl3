@@ -1,9 +1,9 @@
 import { test, expect, describe } from '@jest/globals';
-import tmp from '../src/index.js';
+import app from '../src/app.js';
 
 describe('mock', () => {
   test('test', () => {
     expect(true).toBeTruthy();
-    expect(tmp(3, 4)).toBe(12);
+    expect(() => { app(); }).toThrow();
   });
 });
