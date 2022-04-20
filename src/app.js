@@ -1,4 +1,9 @@
 import onChange from 'on-change';
+import { object, string } from 'yup';
+
+const userSchema = object({
+  url: string().url().nullable(),
+});
 
 const init = (state, onSubmit) => {
   console.log('init start');
@@ -49,6 +54,7 @@ const init = (state, onSubmit) => {
             <div class="row">
                 <div class="col-md-10 col-lg-8 order-1 mx-auto posts"></div>
                 <div class="col-md-10 col-lg-4 mx-auto order-0 order-lg-1 feeds"></div>
+                <div class="col-md-10 col-lg-4 mx-auto order-0 order-lg-1 errors"></div>
             </div>
         </section>
     </main>
@@ -65,6 +71,9 @@ const init = (state, onSubmit) => {
 
   const feeds = root.querySelector('.feeds');
   feeds.textContent = JSON.stringify(state.feeds);
+
+  const errors = root.querySelector('.errors');
+  errors.textContent = JSON.stringify(state.form.errors);
 
   console.log('init end');
 };
@@ -83,6 +92,7 @@ const app = () => {
     console.log('_path', _path);
     console.log('_value', _value);
     console.log('_previous', _previous);
+    init(watched, onSubmit);
   });
 
   const onSubmit = (event) => {
@@ -90,11 +100,15 @@ const app = () => {
     const { target } = event;
     const formData = new FormData(target);
     const url = formData.get('url');
-
-    console.log('target', target);
-    console.log('target.dataset', target.dataset);
-    watched.feeds.push(url);
-    init(watched, onSubmit);
+    try {
+      userSchema.validateSync({ url });
+      watched.feeds.push(url);
+      watched.form.state = 'valid';
+      watched.form.errors = [];
+    } catch (error) {
+      watched.form.state = 'invalid';
+      watched.form.errors = [...error.errors];
+    }
   };
 
   init(watched, onSubmit);
