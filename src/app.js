@@ -1,4 +1,6 @@
-const init = () => {
+import onChange from 'on-change';
+
+const init = (state, onSubmit) => {
   console.log('init start');
   const root = document.body;
   root.innerHTML = `
@@ -58,11 +60,44 @@ const init = () => {
         </div>
     </footer>
     `;
+  const form = root.querySelector('form');
+  form.addEventListener('submit', (event) => onSubmit(event));
+
+  const feeds = root.querySelector('.feeds');
+  feeds.textContent = JSON.stringify(state.feeds);
+
   console.log('init end');
 };
 
 const app = () => {
-  init();
+  const state = {
+    form: {
+      state: 'valid',
+      errors: [],
+    },
+    feeds: [],
+  };
+
+  const watched = onChange(state, (_path, _value, _previous) => {
+    console.log('state', state);
+    console.log('_path', _path);
+    console.log('_value', _value);
+    console.log('_previous', _previous);
+  });
+
+  const onSubmit = (event) => {
+    event.preventDefault();
+    const { target } = event;
+    const formData = new FormData(target);
+    const url = formData.get('url');
+
+    console.log('target', target);
+    console.log('target.dataset', target.dataset);
+    watched.feeds.push(url);
+    init(watched, onSubmit);
+  };
+
+  init(watched, onSubmit);
 };
 
 export default app;
