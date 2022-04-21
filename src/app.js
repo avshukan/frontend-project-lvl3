@@ -10,15 +10,17 @@ const app = () => {
     feeds: [],
   };
 
+  const selector = 'body';
+
   const watched = onChange(state, (_path, _value, _previous) => {
     console.log('state', state);
     console.log('_path', _path);
     console.log('_value', _value);
     console.log('_previous', _previous);
-    render(watched);
+    render(watched, selector);
   });
 
-  render(watched);
+  render(watched, selector);
 };
 
 export default app;

@@ -17,5 +17,13 @@ rules: {
       "message": "Unexpected property on console object was called"
     }
   ],
-  "import/extensions": "off"
+  "import/extensions": "off",
+  "max-len": [
+    "error", 
+    {
+      "code": 120,
+      "tabWidth": 4,
+      "ignoreComments": true,
+    }
+  ],
 }

@@ -4,7 +4,7 @@ const userSchema = object({
   url: string().url().nullable(),
 });
 
-const render = (watched) => {
+const render = (watched, selector) => {
   const state = watched;
   console.log('init start');
 
@@ -25,7 +25,7 @@ const render = (watched) => {
       });
   };
 
-  const root = document.body;
+  const root = document.querySelector(selector);
   root.innerHTML = `
     <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -38,7 +38,10 @@ const render = (watched) => {
                 </div>
                 <div class="modal-body text-break"></div>
                 <div class="modal-footer">
-                    <a class="btn btn-primary full-article" href="#" role="button" target="_blank" rel="noopener noreferrer">Читать полностью </a>
+                    <a class="btn btn-primary full-article" href="#" role="button" 
+                      target="_blank" rel="noopener noreferrer">
+                      Читать полностью
+                    </a>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
                 </div>
             </div>
@@ -54,12 +57,15 @@ const render = (watched) => {
                         <div class="row">
                             <div class="col">
                                 <div class="form-floating">
-                                    <input id="url-input" autofocus="" required="" name="url" aria-label="url" class="form-control w-100" placeholder="ссылка RSS" autocomplete="off">
+                                    <input id="url-input" autofocus="" required="" name="url" aria-label="url" 
+                                      class="form-control w-100" placeholder="ссылка RSS" autocomplete="off">
                                     <label for="url-input">Ссылка RSS</label>
                                 </div>
                             </div>
                             <div class="col-auto">
-                                <button type="submit" aria-label="add" class="h-100 btn btn-lg btn-primary px-sm-5">Добавить</button>
+                                <button type="submit" aria-label="add" class="h-100 btn btn-lg btn-primary px-sm-5">
+                                  Добавить
+                                </button>
                             </div>
                         </div>
                     </form>
@@ -75,6 +81,31 @@ const render = (watched) => {
                 <div class="col-md-10 col-lg-4 mx-auto order-0 order-lg-1 errors"></div>
             </div>
         </section>
+        <section class="container-fluid container-xxl p-5">
+          <div class="row">
+            <div class="col-md-10 col-lg-8 order-1 mx-auto posts">
+              <div class="card border-0">
+                <div class="card-body">
+                  <h2 class="card-title h4">Посты</h2>
+                </div>
+                  <ul class="list-group border-0 rounded-0"></ul>
+                </div>
+              </div>
+              <div class="col-md-10 col-lg-4 mx-auto order-0 order-lg-1 feeds">
+                <div class="card border-0">
+                  <div class="card-body">
+                    <h2 class="card-title h4">Фиды</h2>
+                  </div>
+                  <ul class="list-group border-0 rounded-0">
+                    <li class="list-group-item border-0 border-end-0">
+                      <h3 class="h6 m-0">Новые уроки на Хекслете</h3>
+                      <p class="m-0 small text-black-50">Практические уроки по программированию</p>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </section>
     </main>
     <footer class="footer border-top py-3 mt-5 bg-light">
         <div class="container-xl">
@@ -84,6 +115,9 @@ const render = (watched) => {
         </div>
     </footer>
     `;
+
+  // <input id="url-input" autofocus="" required="" name="url" aria-label="url" class="form-control w-100 is-invalid" placeholder="ссылка RSS" autocomplete="off">
+  // <p class="feedback m-0 position-absolute small text-danger">Ссылка должна быть валидным URL</p>
   const form = root.querySelector('form');
   form.addEventListener('submit', (event) => onSubmit(event));
 
