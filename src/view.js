@@ -13,15 +13,16 @@ const render = (watched) => {
     const { target } = event;
     const formData = new FormData(target);
     const url = formData.get('url');
-    try {
-      userSchema.validateSync({ url });
-      state.feeds.push(url);
-      state.form.state = 'valid';
-      state.form.errors = [];
-    } catch (error) {
-      state.form.state = 'invalid';
-      state.form.errors = [...error.errors];
-    }
+    userSchema.validate({ url })
+      .then(() => {
+        state.feeds.push(url);
+        state.form.state = 'valid';
+        state.form.errors = [];
+      })
+      .catch((error) => {
+        state.form.state = 'invalid';
+        state.form.errors = [...error.errors];
+      });
   };
 
   const root = document.body;
