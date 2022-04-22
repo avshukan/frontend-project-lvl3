@@ -6,9 +6,10 @@ import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const mode = process.env.NODE_ENV || 'development';
 
 export default {
-  mode: process.env.NODE_ENV || 'development',
+  mode,
   entry: path.resolve('.', 'src', 'index.js'),
   output: {
     filename: 'main.js',
@@ -38,4 +39,11 @@ export default {
       cleanOnceBeforeBuildPatterns: ['./dist/*.*'],
     }),
   ],
+  devtool: 'inline-source-map',
+  devServer: {
+    host: 'localhost',
+    static: './dist',
+    port: 8080,
+    compress: true,
+  },
 };
