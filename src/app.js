@@ -1,13 +1,16 @@
 import onChange from 'on-change';
-import render from './view.js';
+import i18next from 'i18next';
+import view from './view.js';
+import locales from './locales/index.js';
 
-const app = () => {
+const app = (i18n) => {
   const state = {
     form: {
       state: 'valid',
       errors: [],
     },
     feeds: [],
+    posts: [],
   };
 
   const selector = 'body';
@@ -17,10 +20,20 @@ const app = () => {
     console.log('_path', _path);
     console.log('_value', _value);
     console.log('_previous', _previous);
-    render(watched, selector);
+    view(watched, selector, i18n);
   });
 
-  render(watched, selector);
+  view(watched, selector, i18n);
 };
 
-export default app;
+const runApp = () => {
+  const i18n = i18next.createInstance();
+  i18n.init({
+    lng: 'ru',
+    debug: true,
+    resources: locales,
+  });
+  app(i18n);
+};
+
+export default runApp;
