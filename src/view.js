@@ -1,5 +1,6 @@
 import * as yup from 'yup';
 import { object, string, ValidationError } from 'yup';
+import getRssData from './rss.js';
 
 yup.setLocale({
   mixed: {
@@ -29,9 +30,12 @@ const view = (watched, selector, i18n) => {
           throw new ValidationError('errors.rssAlreadyExists', { url }, 'url', 'url');
           // throw new ValidationError(message, value, path, type);
         }
-        state.feeds.push(url);
         state.form.state = 'valid';
         state.form.errors = [];
+        getRssData(url)
+          .then((result) => {
+            state.feeds.push(result);
+          });
       })
       .catch((error) => {
         console.log('typeof error', typeof error);
@@ -110,10 +114,10 @@ const view = (watched, selector, i18n) => {
   const getLi = (feed) => {
     const name = document.createElement('h3');
     name.classList.add('h6', 'm-0');
-    name.textContent = feed;
+    name.textContent = feed.url;
     const description = document.createElement('p');
     description.classList.add('m-0', 'small', 'text-black-50');
-    description.textContent = feed;
+    description.textContent = JSON.stringify(feed.data);
     const li = document.createElement('li');
     li.classList.add('list-group-item', 'border-0', 'border-end-0');
     li.prepend(name, description);
