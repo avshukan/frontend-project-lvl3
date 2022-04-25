@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 import { object, string, ValidationError } from 'yup';
-import getRssData from './rss.js';
+import getRssData, { getRssContent } from './rss.js';
 
 yup.setLocale({
   mixed: {
@@ -117,7 +117,8 @@ const view = (watched, selector, i18n) => {
     name.textContent = feed.url;
     const description = document.createElement('p');
     description.classList.add('m-0', 'small', 'text-black-50');
-    description.textContent = JSON.stringify(feed.data);
+    const content = getRssContent(feed.data);
+    description.textContent = JSON.stringify(content);
     const li = document.createElement('li');
     li.classList.add('list-group-item', 'border-0', 'border-end-0');
     li.prepend(name, description);
