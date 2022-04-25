@@ -1,5 +1,7 @@
 import * as yup from 'yup';
 import { object, string, ValidationError } from 'yup';
+import { v4 as uuid } from 'uuid';
+import _ from 'lodash';
 import getRssData, { getRssContent } from './rss.js';
 
 yup.setLocale({
@@ -30,12 +32,28 @@ const view = (watched, selector, i18n) => {
           throw new ValidationError('errors.rssAlreadyExists', { url }, 'url', 'url');
           // throw new ValidationError(message, value, path, type);
         }
+        return getRssData(url);
+      })
+      .then((data) => {
+        const content = getRssContent(data);
         state.form.state = 'valid';
         state.form.errors = [];
-        getRssData(url)
-          .then((result) => {
-            state.feeds.push(result);
-          });
+        const {
+          title, description, link, item,
+        } = content.rss.channel;
+        const feedId = uuid();
+        const feed = {
+          id: feedId,
+          title,
+          description,
+          link,
+        };
+        state.feeds.push(feed);
+        const posts = item.map((post) => _.merge(
+          { id: uuid(), feedId },
+          _.pick(post, ['title', 'description', 'link', 'pubDate']),
+        ));
+        state.posts.push(...posts);
       })
       .catch((error) => {
         console.log('typeof error', typeof error);
@@ -114,11 +132,10 @@ const view = (watched, selector, i18n) => {
   const getLi = (feed) => {
     const name = document.createElement('h3');
     name.classList.add('h6', 'm-0');
-    name.textContent = feed.url;
+    name.textContent = feed.title;
     const description = document.createElement('p');
     description.classList.add('m-0', 'small', 'text-black-50');
-    const content = getRssContent(feed.data);
-    description.textContent = JSON.stringify(content);
+    description.textContent = feed.description;
     const li = document.createElement('li');
     li.classList.add('list-group-item', 'border-0', 'border-end-0');
     li.prepend(name, description);
