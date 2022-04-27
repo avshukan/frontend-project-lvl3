@@ -47,11 +47,12 @@ const view = (watched, selector, i18n) => {
           title,
           description,
           link,
+          url,
         };
         state.feeds.push(feed);
         const posts = item.map((post) => _.merge(
           { id: uuid(), feedId },
-          _.pick(post, ['title', 'description', 'link', 'pubDate']),
+          _.pick(post, ['guid', 'title', 'description', 'link', 'pubDate']),
         ));
         state.posts.push(...posts);
       })

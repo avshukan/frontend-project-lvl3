@@ -2,6 +2,7 @@ import onChange from 'on-change';
 import i18next from 'i18next';
 import view from './view.js';
 import locales from './locales/index.js';
+import getRssData from './rss.js';
 
 const app = (i18n) => {
   const state = {
@@ -23,7 +24,20 @@ const app = (i18n) => {
     view(watched, selector, i18n);
   });
 
+  const refresh = () => {
+    const { feeds } = watched;
+    feeds.forEach((feed) => {
+      console.log('refresh feed', feed);
+      getRssData(feed.url)
+        .then((data) => {
+          console.log('data', data);
+        });
+    });
+    setTimeout(refresh, 10000);
+  };
+
   view(watched, selector, i18n);
+  setTimeout(refresh);
 };
 
 const runApp = () => {
