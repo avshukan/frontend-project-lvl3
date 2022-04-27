@@ -21,6 +21,7 @@ export default {
     errors: {
       urlIsInvalid: 'URL не действителен',
       rssAlreadyExists: 'URL уже добавлен',
+      networkError: 'Сетевая ошибка',
     },
   },
 };

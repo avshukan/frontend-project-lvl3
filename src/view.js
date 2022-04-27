@@ -59,10 +59,17 @@ const view = (watched, selector, i18n) => {
       .catch((error) => {
         console.log('typeof error', typeof error);
         console.log('error', error);
+        console.log('error.name', error.name);
         console.log('Object.entries(error)', Object.entries(error));
         console.log('error.errors', error.errors);
         state.form.state = 'invalid';
-        state.form.errors = [...error.errors];
+        if (error instanceof ValidationError) {
+          state.form.errors = [...error.errors];
+        } else if (error.name === 'NetworkError') {
+          state.form.errors = ['networkError'];
+        } else {
+          state.form.errors = [error.message];
+        }
       });
   };
 
