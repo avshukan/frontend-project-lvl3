@@ -1,8 +1,14 @@
 import axios from 'axios';
 import { XMLParser } from 'fast-xml-parser';
 
-const getRssData = (url) => axios.get(url)
-  .then(({ data }) => data);
+const allOriginsUrl = (url) => `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`;
+
+const getRssData = (url) => axios.get(allOriginsUrl(url))
+  .then(({ status, data }) => {
+    if (status === 200) { return data; }
+    throw new Error('Network response was not ok.');
+  })
+  .then(({ contents }) => contents);
 
 export const getRssContent = (data) => {
   const parser = new XMLParser();
