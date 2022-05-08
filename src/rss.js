@@ -3,7 +3,7 @@ import { XMLParser } from 'fast-xml-parser';
 
 const allOriginsUrl = (url) => `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`;
 
-const getRssData = (url) => axios.get(allOriginsUrl(url))
+const getRssData = (url, httpClient = axios) => httpClient.get(allOriginsUrl(url))
   .then(({ status, data }) => {
     if (status === 200) { return data; }
     throw new Error('Network response was not ok.');
