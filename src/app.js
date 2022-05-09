@@ -1,3 +1,4 @@
+// https://sakhalin.info/export/news/
 // https://sakhalin.info/export/news/?page=&format=rss&notice=0&lines=10&sort=info&charset=utf-8
 // https://www.vedomosti.ru/rss/news
 import onChange from 'on-change';

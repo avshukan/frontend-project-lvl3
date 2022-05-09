@@ -132,20 +132,48 @@ const view = (watched, selector, i18n) => {
     return element;
   };
 
-  const getLi = (feed) => {
+  const getFeedLi = (item) => {
     const name = document.createElement('h3');
     name.classList.add('h6', 'm-0');
-    name.textContent = feed.title;
+    name.textContent = item.title;
     const description = document.createElement('p');
     description.classList.add('m-0', 'small', 'text-black-50');
-    description.textContent = feed.description;
+    description.textContent = item.description;
     const li = document.createElement('li');
     li.classList.add('list-group-item', 'border-0', 'border-end-0');
     li.prepend(name, description);
     return li;
   };
 
-  const dataTemplate = (header, classes, data) => {
+  const getPostLi = (item) => {
+    const a = document.createElement('a');
+    a.classList.add(item.visited ? 'fw-normal' : 'fw-bold');
+    a.setAttribute('href', item.link);
+    a.setAttribute('data-id', item.id);
+    a.setAttribute('target', '_blank');
+    a.setAttribute('rel', 'noopener noreferrer');
+    a.textContent = item.title;
+    const button = document.createElement('button');
+    button.classList.add('btn', 'btn-outline-primary', 'btn-sm');
+    button.setAttribute('type', 'button');
+    button.setAttribute('data-id', item.id);
+    button.setAttribute('data-bs-toggle', 'modal');
+    button.setAttribute('data-bs-target', '#modal');
+    button.textContent = i18n.t('posts.buttonShow');
+    const li = document.createElement('li');
+    li.classList.add(
+      'list-group-item',
+      'd-flex',
+      'justify-content-between',
+      'align-items-start',
+      'border-0',
+      'border-end-0',
+    );
+    li.prepend(a, button);
+    return li;
+  };
+
+  const dataTemplate = (header, classes, data, getLi) => {
     const element = document.createElement('div');
     element.classList.add(...classes);
     element.innerHTML = `
@@ -166,11 +194,13 @@ const view = (watched, selector, i18n) => {
       i18n.t('posts.header'),
       ['col-md-10', 'col-lg-8', 'order-1', 'mx-auto', 'posts'],
       _.sortBy(posts, [(o) => -new Date(o.pubDate)]),
+      getPostLi,
     );
     const feedsElement = dataTemplate(
       i18n.t('feeds.header'),
       ['col-md-10', 'col-lg-4', 'order-0', 'mx-auto', 'feeds'],
       feeds,
+      getFeedLi,
     );
     const row = document.createElement('div');
     row.classList.add('row');
