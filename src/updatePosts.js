@@ -11,7 +11,7 @@ export default (feed, posts) => {
       const { item } = content.rss.channel;
       const newPosts = _.differenceBy(item, posts, 'guid')
         .map((post) => _.merge(
-          { id: uuid(), feedId: feed.id },
+          { id: uuid(), feedId: feed.id, visited: false },
           _.pick(post, ['guid', 'title', 'description', 'link', 'pubDate']),
         ));
       posts.push(...newPosts);
