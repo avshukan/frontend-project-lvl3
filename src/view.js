@@ -3,6 +3,7 @@ import { object, string, ValidationError } from 'yup';
 import { v4 as uuid } from 'uuid';
 import _ from 'lodash';
 import getRssData, { getRssContent } from './rss.js';
+import updatePosts from './updatePosts.js';
 
 yup.setLocale({
   mixed: {
@@ -19,7 +20,7 @@ const userSchema = object({
 });
 
 const view = (watched, selector, i18n) => {
-  const state = watched;
+  const { form, feeds, posts } = watched;
 
   const onSubmit = (event) => {
     event.preventDefault();
@@ -28,7 +29,7 @@ const view = (watched, selector, i18n) => {
     const url = formData.get('url');
     userSchema.validate({ url })
       .then(() => {
-        if (state.feeds.includes(url)) {
+        if (feeds.includes(url)) {
           throw new ValidationError('errors.rssAlreadyExists', { url }, 'url', 'url');
           // throw new ValidationError(message, value, path, type);
         }
@@ -36,11 +37,9 @@ const view = (watched, selector, i18n) => {
       })
       .then((data) => {
         const content = getRssContent(data);
-        state.form.state = 'valid';
-        state.form.errors = [];
-        const {
-          title, description, link, item,
-        } = content.rss.channel;
+        form.state = 'valid';
+        form.errors = [];
+        const { title, description, link } = content.rss.channel;
         const feedId = uuid();
         const feed = {
           id: feedId,
@@ -49,12 +48,8 @@ const view = (watched, selector, i18n) => {
           link,
           url,
         };
-        state.feeds.push(feed);
-        const posts = item.map((post) => _.merge(
-          { id: uuid(), feedId },
-          _.pick(post, ['guid', 'title', 'description', 'link', 'pubDate']),
-        ));
-        state.posts.push(...posts);
+        feeds.push(feed);
+        updatePosts(feed, posts);
       })
       .catch((error) => {
         console.log('typeof error', typeof error);
@@ -62,13 +57,13 @@ const view = (watched, selector, i18n) => {
         console.log('error.name', error.name);
         console.log('Object.entries(error)', Object.entries(error));
         console.log('error.errors', error.errors);
-        state.form.state = 'invalid';
+        form.state = 'invalid';
         if (error instanceof ValidationError) {
-          state.form.errors = [...error.errors];
+          form.errors = [...error.errors];
         } else if (error.name === 'NetworkError') {
-          state.form.errors = ['networkError'];
+          form.errors = ['networkError'];
         } else {
-          state.form.errors = [error.message];
+          form.errors = [error.message];
         }
       });
   };
@@ -125,14 +120,14 @@ const view = (watched, selector, i18n) => {
         <p class="feedback m-0 position-absolute small text-danger"></p>
       </div>
     </div>`;
-    const form = element.querySelector('form');
-    form.addEventListener('submit', (event) => onSubmit(event));
+    const formElement = element.querySelector('form');
+    formElement.addEventListener('submit', (event) => onSubmit(event));
     const urlInput = element.querySelector('#url-input');
     urlInput.setAttribute('placeholder', i18n.t('form.placeholder'));
-    if (state.form.state === 'invalid') {
+    if (form.state === 'invalid') {
       urlInput.classList.add('is-invalid');
       const feedback = element.querySelector('.feedback');
-      feedback.textContent = state.form.errors.map((error) => i18n.t(error)).join(',');
+      feedback.textContent = form.errors.map((error) => i18n.t(error)).join(',');
     }
     return element;
   };
@@ -167,19 +162,19 @@ const view = (watched, selector, i18n) => {
   };
 
   const dataSection = () => {
-    const posts = dataTemplate(
+    const postsElement = dataTemplate(
       i18n.t('posts.header'),
       ['col-md-10', 'col-lg-8', 'order-1', 'mx-auto', 'posts'],
-      _.sortBy(state.posts, [(o) => -new Date(o.pubDate)]),
+      _.sortBy(posts, [(o) => -new Date(o.pubDate)]),
     );
-    const feeds = dataTemplate(
+    const feedsElement = dataTemplate(
       i18n.t('feeds.header'),
       ['col-md-10', 'col-lg-4', 'order-0', 'mx-auto', 'feeds'],
-      state.feeds,
+      feeds,
     );
     const row = document.createElement('div');
     row.classList.add('row');
-    row.prepend(posts, feeds);
+    row.prepend(postsElement, feedsElement);
     const element = document.createElement('section');
     element.classList.add('container-fluid', 'container-xxl', 'p-5');
     element.prepend(row);
