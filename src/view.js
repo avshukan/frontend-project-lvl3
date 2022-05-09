@@ -170,7 +170,7 @@ const view = (watched, selector, i18n) => {
     const posts = dataTemplate(
       i18n.t('posts.header'),
       ['col-md-10', 'col-lg-8', 'order-1', 'mx-auto', 'posts'],
-      state.posts,
+      _.sortBy(state.posts, [(o) => -new Date(o.pubDate)]),
     );
     const feeds = dataTemplate(
       i18n.t('feeds.header'),
