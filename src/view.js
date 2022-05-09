@@ -20,7 +20,9 @@ const userSchema = object({
 });
 
 const view = (watched, selector, i18n) => {
-  const { form, feeds, posts } = watched;
+  const {
+    form, feeds, posts, modal,
+  } = watched;
 
   const onSubmit = (event) => {
     event.preventDefault();
@@ -68,26 +70,52 @@ const view = (watched, selector, i18n) => {
       });
   };
 
-  const modal = () => {
+  const onModalShow = (id) => () => {
+    modal.postId = id;
+    modal.active = true;
+  };
+
+  const onModalHide = () => {
+    modal.active = false;
+  };
+
+  const modalElement = () => {
     const element = document.createElement('div');
     element.classList.add('modal', 'fade');
-    // <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
-    element.innerHTML = `
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title"></h5>
-          <button type="button" class="btn-close close" data-bs-dismiss="modal" aria-label="Close"></button>
+    element.setAttribute('id', 'modal');
+    element.setAttribute('tabindex', '-1');
+    element.setAttribute('role', 'dialog');
+    element.setAttribute('aria-labelledby', 'modal');
+    if (modal.active ?? modal.postId) {
+      element.classList.add('show');
+      element.setAttribute('aria-modal', 'true');
+      element.setAttribute('style', 'display: block;');
+      // <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
+      // <div class="modal fade show" id="modal" tabindex="-1" role="dialog" aria-labelledby="modal" aria-modal="true" style="display: block;">
+      const post = _.find(posts, ({ id }) => id === modal.postId);
+      element.innerHTML = `
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">${post.title}</h5>
+            <button type="button" class="btn-close close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body text-break">${post.description}</div>
+          <div class="modal-footer">
+            <a class="btn btn-primary full-article" href="#" role="button" target="_blank" rel="noopener noreferrer">
+              Читать полностью
+            </a>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+          </div>
         </div>
-        <div class="modal-body text-break"></div>
-        <div class="modal-footer">
-          <a class="btn btn-primary full-article" href="#" role="button" target="_blank" rel="noopener noreferrer">
-            Читать полностью
-          </a>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-        </div>
-      </div>
-    </div>`;
+      </div>`;
+      const closeButtons = element.querySelectorAll('button');
+      closeButtons.forEach((button) => {
+        button.addEventListener('click', onModalHide);
+      });
+    } else {
+      element.setAttribute('aria-hidden', 'true');
+    }
     return element;
   };
 
@@ -160,6 +188,7 @@ const view = (watched, selector, i18n) => {
     button.setAttribute('data-bs-toggle', 'modal');
     button.setAttribute('data-bs-target', '#modal');
     button.textContent = i18n.t('posts.buttonShow');
+    button.addEventListener('click', onModalShow(item.id));
     const li = document.createElement('li');
     li.classList.add(
       'list-group-item',
@@ -237,7 +266,7 @@ const view = (watched, selector, i18n) => {
   const root = document.querySelector(selector);
   root.innerHTML = '';
   const childs = [
-    modal(),
+    modalElement(modal),
     main(),
     footer(),
   ];

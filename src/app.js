@@ -7,6 +7,8 @@ import view from './view.js';
 import locales from './locales/index.js';
 import updatePosts from './updatePosts.js';
 
+const ms = 5000;
+
 const app = (i18n) => {
   const state = {
     form: {
@@ -15,6 +17,10 @@ const app = (i18n) => {
     },
     feeds: [],
     posts: [],
+    modal: {
+      postId: null,
+      active: false,
+    },
   };
 
   const selector = 'body';
@@ -30,7 +36,7 @@ const app = (i18n) => {
   const refresh = () => {
     const { feeds, posts } = watched;
     feeds.forEach((feed) => updatePosts(feed, posts));
-    setTimeout(refresh, 10000);
+    setTimeout(refresh, ms);
   };
 
   view(watched, selector, i18n);
