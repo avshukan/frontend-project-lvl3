@@ -19,6 +19,10 @@ export default {
     feeds: {
       header: 'Фиды',
     },
+    modal: {
+      readFull: 'Читать полностью',
+      hideModal: 'Закрыть',
+    },
     errors: {
       urlIsInvalid: 'URL не действителен',
       rssAlreadyExists: 'URL уже добавлен',

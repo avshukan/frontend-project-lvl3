@@ -70,11 +70,6 @@ const view = (watched, selector, i18n) => {
       });
   };
 
-  const onModalShow = (id) => () => {
-    modal.postId = id;
-    modal.active = true;
-  };
-
   const onModalHide = () => {
     modal.active = false;
   };
@@ -86,43 +81,64 @@ const view = (watched, selector, i18n) => {
     element.setAttribute('tabindex', '-1');
     element.setAttribute('role', 'dialog');
     element.setAttribute('aria-labelledby', 'modal');
-    if (modal.active ?? modal.postId) {
+    if (modal.active && modal.postId) {
       element.classList.add('show');
       element.setAttribute('aria-modal', 'true');
       element.setAttribute('style', 'display: block;');
-      // <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
-      // <div class="modal fade show" id="modal" tabindex="-1" role="dialog" aria-labelledby="modal" aria-modal="true" style="display: block;">
-      const post = _.find(posts, ({ id }) => id === modal.postId);
-      element.innerHTML = `
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">${post.title}</h5>
-            <button type="button" class="btn-close close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body text-break">${post.description}</div>
-          <div class="modal-footer">
-            <a class="btn btn-primary full-article" href="#" role="button" target="_blank" rel="noopener noreferrer">
-              Читать полностью
-            </a>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-          </div>
-        </div>
-      </div>`;
-      const closeButtons = element.querySelectorAll('button');
-      closeButtons.forEach((button) => {
-        button.addEventListener('click', onModalHide);
-      });
     } else {
       element.setAttribute('aria-hidden', 'true');
     }
+    element.innerHTML = `
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"></h5>
+          <button type="button" class="btn-close close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-break"></div>
+        <div class="modal-footer">
+          <a
+            class="btn btn-primary full-article" 
+            href="#" 
+            role="button" 
+            target="_blank" 
+            rel="noopener noreferrer"
+          >
+            ${i18n.t('modal.readFull')}
+          </a>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            ${i18n.t('modal.hideModal')}
+          </button>
+        </div>
+      </div>
+    </div>`;
+    const closeButtons = element.querySelectorAll('button');
+    closeButtons.forEach((button) => {
+      button.addEventListener('click', onModalHide);
+    });
+
+    element.addEventListener('show.bs.modal', (event) => {
+      const button = event.relatedTarget;
+      const title = button.getAttribute('data-bs-title');
+      const description = button.getAttribute('data-bs-description');
+      const link = button.getAttribute('data-bs-link');
+      const modalTitle = element.querySelector('.modal-title');
+      const modalDescription = element.querySelector('.modal-body');
+      const modalLink = element.querySelector('a');
+      modalTitle.textContent = title;
+      modalDescription.textContent = description;
+      modalLink.setAttribute('href', link);
+      modal.postId = button.getAttribute('data-bs-id');
+      modal.active = true;
+      const post = _.find(posts, (item) => item.id === modal.postId);
+      post.visited = true;
+    });
     return element;
   };
 
   const formSection = () => {
     const element = document.createElement('section');
     element.classList.add('container-fluid', 'bg-dark', 'p-5');
-    // <h1 class="display-3 mb-0">RSS агрегатор</h1>
     element.innerHTML = `
     <div class="row">
       <div class="col-md-10 col-lg-8 mx-auto text-white">
@@ -187,8 +203,11 @@ const view = (watched, selector, i18n) => {
     button.setAttribute('data-id', item.id);
     button.setAttribute('data-bs-toggle', 'modal');
     button.setAttribute('data-bs-target', '#modal');
+    button.setAttribute('data-bs-id', item.id);
+    button.setAttribute('data-bs-title', item.title);
+    button.setAttribute('data-bs-description', item.description);
+    button.setAttribute('data-bs-link', item.link);
     button.textContent = i18n.t('posts.buttonShow');
-    button.addEventListener('click', onModalShow(item.id));
     const li = document.createElement('li');
     li.classList.add(
       'list-group-item',
