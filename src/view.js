@@ -11,7 +11,7 @@ yup.setLocale({
     required: 'field_required',
   },
   string: {
-    url: 'errors.urlIsInvalid',
+    url: 'feedback.urlIsInvalid',
   },
 });
 
@@ -31,8 +31,8 @@ const view = (watched, selector, i18n) => {
     const url = formData.get('url');
     userSchema.validate({ url })
       .then(() => {
-        if (feeds.includes(url)) {
-          throw new ValidationError('errors.rssAlreadyExists', { url }, 'url', 'url');
+        if (feeds.map((feed) => feed.url).includes(url)) {
+          throw new ValidationError('feedback.rssAlreadyExists', { url }, 'url', 'url');
           // throw new ValidationError(message, value, path, type);
         }
         return getRssData(url);
@@ -52,6 +52,8 @@ const view = (watched, selector, i18n) => {
         };
         feeds.push(feed);
         updatePosts(feed, posts);
+        form.feedback = ['feedback.success'];
+        form.state = 'valid';
       })
       .catch((error) => {
         console.log('typeof error', typeof error);
@@ -61,11 +63,11 @@ const view = (watched, selector, i18n) => {
         console.log('error.errors', error.errors);
         form.state = 'invalid';
         if (error instanceof ValidationError) {
-          form.errors = [...error.errors];
+          form.feedback = [...error.errors];
         } else if (error.name === 'NetworkError') {
-          form.errors = ['networkError'];
+          form.feedback = ['networkError'];
         } else {
-          form.errors = [error.message];
+          form.feedback = [error.message];
         }
       });
   };
@@ -161,17 +163,20 @@ const view = (watched, selector, i18n) => {
           </div>
         </form>
         <p class="mt-2 mb-0 text-muted">${i18n.t('form.example')}</p>
-        <p class="feedback m-0 position-absolute small text-danger"></p>
+        <p class="feedback m-0 position-absolute small"></p>
       </div>
     </div>`;
     const formElement = element.querySelector('form');
     formElement.addEventListener('submit', (event) => onSubmit(event));
     const urlInput = element.querySelector('#url-input');
     urlInput.setAttribute('placeholder', i18n.t('form.placeholder'));
+    const feedbackElement = element.querySelector('.feedback');
+    feedbackElement.textContent = form.feedback.map((message) => i18n.t(message)).join(',');
     if (form.state === 'invalid') {
       urlInput.classList.add('is-invalid');
-      const feedback = element.querySelector('.feedback');
-      feedback.textContent = form.errors.map((error) => i18n.t(error)).join(',');
+      feedbackElement.classList.add('text-danger');
+    } else {
+      feedbackElement.classList.add('text-success');
     }
     return element;
   };

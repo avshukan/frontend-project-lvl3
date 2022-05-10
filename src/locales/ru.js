@@ -23,10 +23,11 @@ export default {
       readFull: 'Читать полностью',
       hideModal: 'Закрыть',
     },
-    errors: {
+    feedback: {
       urlIsInvalid: 'URL не действителен',
       rssAlreadyExists: 'URL уже добавлен',
       networkError: 'Сетевая ошибка',
+      success: 'RSS успешно загружен',
     },
   },
 };

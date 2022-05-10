@@ -13,7 +13,7 @@ const app = (i18n) => {
   const state = {
     form: {
       state: 'valid',
-      errors: [],
+      feedback: [],
     },
     feeds: [],
     posts: [],
