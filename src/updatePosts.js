@@ -3,7 +3,6 @@ import _ from 'lodash';
 import getRssData, { getRssContent } from './rss.js';
 
 export default (feed, posts) => {
-  console.log('refresh feed', feed);
   getRssData(feed.url)
     .then((data) => {
       console.log('data', data);
