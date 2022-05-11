@@ -29,7 +29,6 @@ const view = (watched, selector, i18n) => {
     const { target } = event;
     const formData = new FormData(target);
     const url = formData.get('url');
-    console.log('url', url);
     userSchema.validate({ url })
       .then(() => {
         if (feeds.map((feed) => feed.url).includes(url)) {
@@ -57,11 +56,6 @@ const view = (watched, selector, i18n) => {
         form.state = 'valid';
       })
       .catch((error) => {
-        console.log('typeof error', typeof error);
-        console.log('error', error);
-        console.log('error.name', error.name);
-        console.log('Object.entries(error)', Object.entries(error));
-        console.log('error.errors', error.errors);
         form.state = 'invalid';
         if (error instanceof ValidationError) {
           form.feedback = [...error.errors];

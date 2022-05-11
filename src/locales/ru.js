@@ -28,6 +28,7 @@ export default {
       rssAlreadyExists: 'RSS уже существует',
       rssIsInvalid: 'Ресурс не содержит валидный RSS',
       networkError: 'Ошибка сети',
+      unknownError: 'Неизвестная ошибка',
       success: 'RSS успешно загружен',
     },
   },

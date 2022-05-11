@@ -7,7 +7,7 @@ const getRssData = (url, httpClient = axios) => httpClient.get(allOriginsUrl(url
   .then((response) => {
     const { status, data } = response;
     if (status === 200) { return data; }
-    throw new Error('Network response was not ok.');
+    throw new Error('feedback.networkError');
   })
   .then(({ contents }) => contents);
 
