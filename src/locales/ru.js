@@ -24,7 +24,7 @@ export default {
       hideModal: 'Закрыть',
     },
     feedback: {
-      urlIsInvalid: 'URL не действителен',
+      urlIsInvalid: 'Ссылка должна быть валидным URL',
       rssAlreadyExists: 'RSS уже существует',
       networkError: 'Сетевая ошибка',
       success: 'RSS успешно загружен',
