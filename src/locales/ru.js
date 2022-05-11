@@ -25,7 +25,7 @@ export default {
     },
     feedback: {
       urlIsInvalid: 'URL не действителен',
-      rssAlreadyExists: 'URL уже добавлен',
+      rssAlreadyExists: 'RSS уже существует',
       networkError: 'Сетевая ошибка',
       success: 'RSS успешно загружен',
     },
