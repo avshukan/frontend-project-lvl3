@@ -29,6 +29,7 @@ const view = (watched, selector, i18n) => {
     const { target } = event;
     const formData = new FormData(target);
     const url = formData.get('url');
+    console.log('url', url);
     userSchema.validate({ url })
       .then(() => {
         if (feeds.map((feed) => feed.url).includes(url)) {
