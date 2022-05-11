@@ -68,7 +68,7 @@ const view = (watched, selector, i18n) => {
         } else if (error instanceof TypeError) {
           form.feedback = ['feedback.rssIsInvalid'];
         } else if (error.name === 'NetworkError') {
-          form.feedback = ['networkError'];
+          form.feedback = ['feedback.networkError'];
         } else {
           form.feedback = [error.message];
         }

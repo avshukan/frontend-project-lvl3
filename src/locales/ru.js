@@ -27,7 +27,7 @@ export default {
       urlIsInvalid: 'Ссылка должна быть валидным URL',
       rssAlreadyExists: 'RSS уже существует',
       rssIsInvalid: 'Ресурс не содержит валидный RSS',
-      networkError: 'Сетевая ошибка',
+      networkError: 'Ошибка сети',
       success: 'RSS успешно загружен',
     },
   },
