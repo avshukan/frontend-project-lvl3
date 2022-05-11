@@ -26,6 +26,7 @@ export default {
     feedback: {
       urlIsInvalid: 'Ссылка должна быть валидным URL',
       rssAlreadyExists: 'RSS уже существует',
+      rssIsInvalid: 'Ресурс не содержит валидный RSS',
       networkError: 'Сетевая ошибка',
       success: 'RSS успешно загружен',
     },
