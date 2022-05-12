@@ -6,7 +6,7 @@ import getRssData, { getRssContent } from './rss.js';
 import updatePosts from './updatePosts.js';
 import rejectSlowNetwork from './rejectSlowNetwork.js';
 
-const networkTimeout = 5000;
+const networkTimeout = 1000;
 
 yup.setLocale({
   mixed: {
