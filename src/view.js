@@ -4,6 +4,9 @@ import { v4 as uuid } from 'uuid';
 import _ from 'lodash';
 import getRssData, { getRssContent } from './rss.js';
 import updatePosts from './updatePosts.js';
+import rejectSlowNetwork from './rejectSlowNetwork.js';
+
+const networkTimeout = 5000;
 
 yup.setLocale({
   mixed: {
@@ -35,7 +38,10 @@ const view = (watched, selector, i18n) => {
           throw new ValidationError('feedback.rssAlreadyExists', { url }, 'url', 'url');
           // throw new ValidationError(message, value, path, type);
         }
-        return getRssData(url);
+        return Promise.race([
+          getRssData(url),
+          rejectSlowNetwork(networkTimeout),
+        ]);
       })
       .then((data) => {
         const content = getRssContent(data);
