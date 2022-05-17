@@ -12,7 +12,7 @@ const ms = 5000;
 const app = (i18n) => {
   const state = {
     form: {
-      state: 'valid',
+      state: 'ready',
       feedback: [],
     },
     feeds: [],
