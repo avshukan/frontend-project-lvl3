@@ -5,7 +5,6 @@ import getRssData, { getRssContent } from './rss.js';
 export default (feed, posts) => {
   getRssData(feed.url)
     .then((data) => {
-      console.log('data', data);
       const content = getRssContent(data);
       const { item } = content.rss.channel;
       const diff = _.differenceBy(item, posts, 'guid');
