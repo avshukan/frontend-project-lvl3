@@ -1,3 +1,4 @@
+// https://ru.hexlet.io/lessons.rss
 // https://sakhalin.info/export/news/
 // https://www.vedomosti.ru/rss/news
 import onChange from 'on-change';
@@ -12,7 +13,7 @@ import getRssData, { getRssContent } from './rss.js';
 import rejectSlowNetwork from './rejectSlowNetwork.js';
 
 const ms = 5000;
-const networkTimeout = 1000;
+const networkTimeout = 4000;
 
 yup.setLocale({
   mixed: {
@@ -240,8 +241,22 @@ const app = () => {
 
   const refresh = () => {
     const { feeds, posts } = watched;
-    feeds.forEach((feed) => updatePosts(feed, posts));
-    setTimeout(refresh, ms);
+    const promises = feeds.map((feed) => getRssData(feed.url)
+      .then((data) => {
+        const content = getRssContent(data);
+        const { item } = content.rss.channel;
+        const diff = _.differenceBy(item, posts, 'guid');
+        if (!_.isEmpty(diff)) {
+          const newPosts = diff.map((post) => _.merge(
+            { id: uuid(), feedId: feed.id, visited: false },
+            _.pick(post, ['guid', 'title', 'description', 'link', 'pubDate']),
+          ));
+          posts.push(...newPosts);
+        }
+      }));
+    Promise
+      .all(promises)
+      .finally(() => setTimeout(refresh, ms));
   };
 
   view(watched, i18n);
