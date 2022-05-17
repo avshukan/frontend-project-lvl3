@@ -9,7 +9,14 @@ import updatePosts from './updatePosts.js';
 
 const ms = 5000;
 
-const app = (i18n) => {
+const app = () => {
+  const i18n = i18next.createInstance();
+  i18n.init({
+    lng: 'ru',
+    debug: true,
+    resources: locales,
+  });
+
   const state = {
     form: {
       state: 'ready',
@@ -25,11 +32,8 @@ const app = (i18n) => {
 
   const selector = 'body';
 
-  const watched = onChange(state, (_path, _value, _previous) => {
-    console.log('state', state);
-    console.log('_path', _path);
-    console.log('_value', _value);
-    console.log('_previous', _previous);
+  // const watched = onChange(state, (_path, _value, _previous) => {
+  const watched = onChange(state, () => {
     view(watched, selector, i18n);
   });
 
@@ -43,14 +47,4 @@ const app = (i18n) => {
   setTimeout(refresh);
 };
 
-const runApp = () => {
-  const i18n = i18next.createInstance();
-  i18n.init({
-    lng: 'ru',
-    debug: true,
-    resources: locales,
-  });
-  app(i18n);
-};
-
-export default runApp;
+export default app;
