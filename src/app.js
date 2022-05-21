@@ -15,24 +15,27 @@ import rejectSlowNetwork from './rejectSlowNetwork.js';
 const ms = 5000;
 const networkTimeout = 4000;
 
-yup.setLocale({
-  mixed: {
-    default: 'field_invalid',
-    required: 'field_required',
-  },
-  string: {
-    url: 'feedback.urlIsInvalid',
-  },
-});
-
-const userSchema = object({
-  url: string().url().nullable(),
-});
-
 const view = (watched, i18n) => {
   const {
     form, feeds, posts, modal,
   } = watched;
+
+  yup.setLocale({
+    mixed: {
+      default: 'field_invalid',
+      required: 'field_required',
+    },
+    string: {
+      url: 'feedback.urlIsInvalid',
+    },
+  });
+
+  const userSchema = object({
+    url: string()
+      .url()
+      .nullable()
+      .notOneOf(feeds.map(({ url }) => url)),
+  });
 
   const elements = {
     header: document.querySelector('h1'),
@@ -59,16 +62,7 @@ const view = (watched, i18n) => {
     const formData = new FormData(target);
     const url = formData.get('url');
     userSchema.validate({ url })
-      .then(() => {
-        if (feeds.map((feed) => feed.url).includes(url)) {
-          throw new ValidationError('feedback.rssAlreadyExists', { url }, 'url', 'url');
-          // throw new ValidationError(message, value, path, type);
-        }
-        return Promise.race([
-          getRssData(url),
-          rejectSlowNetwork(networkTimeout),
-        ]);
-      })
+      .then(() => Promise.race([getRssData(url), rejectSlowNetwork(networkTimeout)]))
       .then((data) => {
         const content = getRssContent(data);
         form.state = 'valid';
