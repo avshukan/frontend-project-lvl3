@@ -7,10 +7,12 @@ import * as yup from 'yup';
 import { object, string, ValidationError } from 'yup';
 import { v4 as uuid } from 'uuid';
 import _ from 'lodash';
+import axios from 'axios';
 import updatePosts from './updatePosts.js';
 import locales from './locales/index.js';
 import getRssData, { getRssContent } from './rss.js';
 import rejectSlowNetwork from './rejectSlowNetwork.js';
+import makeUrlWithProxy from './makeUrlWithProxy.js';
 
 const ms = 5000;
 const networkTimeout = 4000;
@@ -63,8 +65,10 @@ const view = (watched, i18n) => {
     const url = formData.get('url');
     userSchema.validate({ url })
       .then(() => Promise.race([getRssData(url), rejectSlowNetwork(networkTimeout)]))
-      .then((data) => {
-        const content = getRssContent(data);
+      .then(() => axios.get(makeUrlWithProxy(url)))
+      .then((response) => response.data.contents)
+      .then((contents) => {
+        const content = getRssContent(contents);
         form.state = 'valid';
         form.errors = [];
         const { title, description, link } = content.rss.channel;
