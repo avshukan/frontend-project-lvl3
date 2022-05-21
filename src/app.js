@@ -34,7 +34,7 @@ const view = (watched, i18n) => {
     url: string()
       .url()
       .nullable()
-      .notOneOf(feeds.map(({ url }) => url)),
+      .notOneOf(feeds.map(({ url }) => url), 'feedback.rssAlreadyExists'),
   });
 
   const elements = {
