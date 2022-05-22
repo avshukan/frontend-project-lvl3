@@ -7,15 +7,13 @@ import * as yup from 'yup';
 import { object, string, ValidationError } from 'yup';
 import { v4 as uuid } from 'uuid';
 import _ from 'lodash';
-import axios from 'axios';
-import updatePosts from './updatePosts.js';
 import locales from './locales/index.js';
-import getRssData, { getRssContent } from './rss.js';
-import rejectSlowNetwork from './rejectSlowNetwork.js';
-import makeUrlWithProxy from './makeUrlWithProxy.js';
+import getRssData from './getRssXml.js';
+import getRssContent from './getRssContent.js';
+// import rejectSlowNetwork from './rejectSlowNetwork.js';
 
-const ms = 5000;
-const networkTimeout = 4000;
+// const ms = 5000;
+// const networkTimeout = 4000;
 
 const view = (watched, i18n) => {
   const {
@@ -64,24 +62,29 @@ const view = (watched, i18n) => {
     const formData = new FormData(target);
     const url = formData.get('url');
     userSchema.validate({ url })
-      .then(() => Promise.race([getRssData(url), rejectSlowNetwork(networkTimeout)]))
-      .then(() => axios.get(makeUrlWithProxy(url)))
-      .then((response) => response.data.contents)
-      .then((contents) => {
-        const content = getRssContent(contents);
+      .then(() => getRssData(url))
+      .then((response) => getRssContent(response))
+      // .then(() => Promise.race([getRssData(url), rejectSlowNetwork(networkTimeout)]))
+      .then(({ rssFeed, rssPosts }) => {
         form.state = 'valid';
         form.errors = [];
-        const { title, description, link } = content.rss.channel;
         const feedId = uuid();
         const feed = {
           id: feedId,
-          title,
-          description,
-          link,
           url,
+          ...rssFeed,
         };
         feeds.push(feed);
-        updatePosts(feed, posts);
+        posts.push(...rssPosts
+          .map((post) => _.merge(
+            {
+              id: uuid(),
+              feedId: feed.id,
+              visited: false,
+            },
+            _.pick(post, ['guid', 'title', 'description', 'link', 'pubDate']),
+          )));
+        // updatePosts(feed, posts);
         form.feedback = ['feedback.success'];
         form.state = 'valid';
       })
@@ -237,28 +240,28 @@ const app = () => {
     view(watched, i18n);
   });
 
-  const refresh = () => {
-    const { feeds, posts } = watched;
-    const promises = feeds.map((feed) => getRssData(feed.url)
-      .then((data) => {
-        const content = getRssContent(data);
-        const { item } = content.rss.channel;
-        const diff = _.differenceBy(item, posts, 'guid');
-        if (!_.isEmpty(diff)) {
-          const newPosts = diff.map((post) => _.merge(
-            { id: uuid(), feedId: feed.id, visited: false },
-            _.pick(post, ['guid', 'title', 'description', 'link', 'pubDate']),
-          ));
-          posts.push(...newPosts);
-        }
-      }));
-    Promise
-      .all(promises)
-      .finally(() => setTimeout(refresh, ms));
-  };
+  // const refresh = () => {
+  //   const { feeds, posts } = watched;
+  //   const promises = feeds.map((feed) => getRssData(feed.url)
+  //     .then((data) => {
+  //       const content = getRssContent(data);
+  //       const { item } = content.rss.channel;
+  //       const diff = _.differenceBy(item, posts, 'guid');
+  //       if (!_.isEmpty(diff)) {
+  //         const newPosts = diff.map((post) => _.merge(
+  //           { id: uuid(), feedId: feed.id, visited: false },
+  //           _.pick(post, ['guid', 'title', 'description', 'link', 'pubDate']),
+  //         ));
+  //         posts.push(...newPosts);
+  //       }
+  //     }));
+  //   Promise
+  //     .all(promises)
+  //     .finally(() => setTimeout(refresh, ms));
+  // };
 
   view(watched, i18n);
-  setTimeout(refresh);
+  // setTimeout(refresh);
 };
 
 export default app;
