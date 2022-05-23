@@ -12,7 +12,7 @@ import getRssData from './getRssXml.js';
 import getRssContent from './getRssContent.js';
 // import rejectSlowNetwork from './rejectSlowNetwork.js';
 
-// const ms = 5000;
+const refreshDelay = 5000;
 // const networkTimeout = 4000;
 
 const app = () => {
@@ -70,13 +70,13 @@ const app = () => {
     elements.formButton.textContent = i18n.t('form.submitName');
     elements.example.textContent = i18n.t('form.example');
     elements.feedbackElement.textContent = form.feedback.map((message) => i18n.t(message)).join(',');
+    elements.urlInput.classList.remove('is-invalid');
+    elements.feedbackElement.classList.remove('text-success', 'text-danger');
     if (form.state === 'invalid') {
       elements.urlInput.classList.add('is-invalid');
       elements.feedbackElement.classList.add('text-danger');
-      elements.feedbackElement.classList.remove('text-success');
     } else {
       elements.feedbackElement.classList.add('text-success');
-      elements.feedbackElement.classList.remove('text-danger');
     }
 
     const getFeedLi = (item) => {
@@ -173,7 +173,6 @@ const app = () => {
     });
   };
 
-  // const watched = onChange(state, (_path, _value, _previous) => {
   const watched = onChange(state, () => {
     view(watched);
   });
@@ -201,13 +200,13 @@ const app = () => {
     const url = formData.get('url');
     userSchema.validate({ url })
       .then(() => {
+        form.feedback = [];
         form.state = 'pending';
-        form.errors = [];
         return getRssData(url);
       })
-      .then((response) => getRssContent(response))
       // .then(() => Promise.race([getRssData(url), rejectSlowNetwork(networkTimeout)]))
-      .then(({ rssFeed, rssPosts }) => {
+      .then((data) => {
+        const { rssFeed, rssPosts } = getRssContent(data);
         const feedId = uuid();
         feeds.push({
           id: feedId,
@@ -242,28 +241,27 @@ const app = () => {
 
   elements.formElement.addEventListener('submit', (event) => onSubmit(event));
 
-  // const refresh = () => {
-  //   const { feeds, posts } = watched;
-  //   const promises = feeds.map((feed) => getRssData(feed.url)
-  //     .then((data) => {
-  //       const content = getRssContent(data);
-  //       const { item } = content.rss.channel;
-  //       const diff = _.differenceBy(item, posts, 'guid');
-  //       if (!_.isEmpty(diff)) {
-  //         const newPosts = diff.map((post) => _.merge(
-  //           { id: uuid(), feedId: feed.id, visited: false },
-  //           _.pick(post, ['guid', 'title', 'description', 'link', 'pubDate']),
-  //         ));
-  //         posts.push(...newPosts);
-  //       }
-  //     }));
-  //   Promise
-  //     .all(promises)
-  //     .finally(() => setTimeout(refresh, ms));
-  // };
+  const refresh = (watchedState) => {
+    const { feeds, posts } = watchedState;
+    const promises = feeds.map((feed) => getRssData(feed.url)
+      .then((data) => {
+        const { rssPosts } = getRssContent(data);
+        const diff = _.differenceBy(rssPosts, posts, 'guid');
+        if (!_.isEmpty(diff)) {
+          const newPosts = diff.map((post) => _.merge(
+            { id: uuid(), feedId: feed.id, visited: false },
+            _.pick(post, ['guid', 'title', 'description', 'link', 'pubDate']),
+          ));
+          posts.push(...newPosts);
+        }
+      }));
+    Promise
+      .all(promises)
+      .finally(() => setTimeout(refresh(watchedState), refreshDelay));
+  };
 
   view(watched);
-  // setTimeout(refresh);
+  setTimeout(refresh, refreshDelay);
 };
 
 export default app;
