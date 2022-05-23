@@ -62,31 +62,31 @@ const view = (watched, i18n) => {
     const formData = new FormData(target);
     const url = formData.get('url');
     userSchema.validate({ url })
-      .then(() => getRssData(url))
+      .then(() => {
+        form.state = 'pending';
+        form.errors = [];
+        return getRssData(url);
+      })
       .then((response) => getRssContent(response))
       // .then(() => Promise.race([getRssData(url), rejectSlowNetwork(networkTimeout)]))
       .then(({ rssFeed, rssPosts }) => {
-        form.state = 'valid';
-        form.errors = [];
         const feedId = uuid();
-        const feed = {
+        feeds.push({
           id: feedId,
           url,
           ...rssFeed,
-        };
-        feeds.push(feed);
+        });
         posts.push(...rssPosts
           .map((post) => _.merge(
             {
               id: uuid(),
-              feedId: feed.id,
+              feedId,
               visited: false,
             },
             _.pick(post, ['guid', 'title', 'description', 'link', 'pubDate']),
           )));
-        // updatePosts(feed, posts);
-        form.feedback = ['feedback.success'];
         form.state = 'valid';
+        form.feedback = ['feedback.success'];
       })
       .catch((error) => {
         form.state = 'invalid';
