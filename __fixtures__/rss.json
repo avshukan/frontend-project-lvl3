@@ -6,39 +6,25 @@
     },
     "rssPosts": [
         {
-            "title": "О курсе / HTTP API",
-            "guid": 2585,
-            "link": "https://ru.hexlet.io/courses/http-api/lessons/init/theory_unit",
-            "description": "Цель: Узнать о курсе, его структуре, задачах и целях",
-            "pubDate": "Sun, 24 Apr 2022 19:32:12 +0000"
+            "title": "Как быстро и эффективно влиться в рабочий процесс / Трудоустройство",
+            "guid": 2648,
+            "link": "https://ru.hexlet.io/courses/employment/lessons/workflow/theory_unit",
+            "description": "Цель: Узнать о первых шагах на новом рабочем месте",
+            "pubDate": "Mon, 23 May 2022 12:11:45 +0000"
         },
         {
-            "title": "Для чего используется HTTP API / HTTP API",
-            "guid": 2586,
-            "link": "https://ru.hexlet.io/courses/http-api/lessons/purposes/theory_unit",
-            "description": "Цель: Познакомиться с задачами, которые не могут быть сделаны без API",
-            "pubDate": "Sun, 24 Apr 2022 19:32:08 +0000"
+            "title": "OpenAPI (ранее Swagger Specification) / HTTP API",
+            "guid": 2593,
+            "link": "https://ru.hexlet.io/courses/http-api/lessons/openapi/theory_unit",
+            "description": "Цель: Познакомиться со стандартом, позволяющим создавать спецификацию HTTP API, удобной для кодогенерации, документирования и тестирования",
+            "pubDate": "Thu, 19 May 2022 02:09:20 +0000"
         },
         {
-            "title": "Пример HTTP API / HTTP API",
-            "guid": 2587,
-            "link": "https://ru.hexlet.io/courses/http-api/lessons/example/theory_unit",
-            "description": "Цель: Познакомиться с ресурсами и эндпоинтами. Научиться понимать JSON использовать пагинацию и вложенные ресурсы",
-            "pubDate": "Sun, 24 Apr 2022 19:32:04 +0000"
-        },
-        {
-            "title": "HTTP запросы в браузере / HTTP API",
-            "guid": 2588,
-            "link": "https://ru.hexlet.io/courses/http-api/lessons/devtools/theory_unit",
-            "description": "Цель: Познакомиться с панелью разработчика и научиться отслеживать запросы к API",
-            "pubDate": "Sun, 24 Apr 2022 19:32:00 +0000"
-        },
-        {
-            "title": "Нетворкинг / Трудоустройство",
-            "guid": 2584,
-            "link": "https://ru.hexlet.io/courses/employment/lessons/networking/theory_unit",
-            "description": "Цель: Что такое нетворкинг и как его развить",
-            "pubDate": "Fri, 22 Apr 2022 15:37:29 +0000"
+            "title": "Виды API / HTTP API",
+            "guid": 2590,
+            "link": "https://ru.hexlet.io/courses/http-api/lessons/kinds/theory_unit",
+            "description": "Цель: Познакомиться с тем, каким бывает HTTP API (RPC, REST)",
+            "pubDate": "Thu, 19 May 2022 01:39:11 +0000"
         }
     ]
 }

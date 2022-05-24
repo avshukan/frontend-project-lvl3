@@ -8,8 +8,9 @@ import { object, string, ValidationError } from 'yup';
 import { v4 as uuid } from 'uuid';
 import _ from 'lodash';
 import locales from './locales/index.js';
-import getRssData from './getRssXml.js';
+import getRssXml from './getRssXml.js';
 import getRssContent from './getRssContent.js';
+import makeUrlWithProxy from './makeUrlWithProxy.js';
 // import rejectSlowNetwork from './rejectSlowNetwork.js';
 
 const refreshDelay = 5000;
@@ -202,7 +203,7 @@ const app = () => {
       .then(() => {
         form.feedback = [];
         form.state = 'pending';
-        return getRssData(url);
+        return getRssXml(makeUrlWithProxy(url));
       })
       // .then(() => Promise.race([getRssData(url), rejectSlowNetwork(networkTimeout)]))
       .then((data) => {
@@ -243,7 +244,7 @@ const app = () => {
 
   const refresh = (watchedState) => {
     const { feeds, posts } = watchedState;
-    const promises = feeds.map((feed) => getRssData(feed.url)
+    const promises = feeds.map((feed) => getRssXml(makeUrlWithProxy(feed.url))
       .then((data) => {
         const { rssPosts } = getRssContent(data);
         const diff = _.differenceBy(rssPosts, posts, 'guid');
@@ -257,11 +258,11 @@ const app = () => {
       }));
     Promise
       .all(promises)
-      .finally(() => setTimeout(refresh(watchedState), refreshDelay));
+      .finally(() => setTimeout(() => refresh(watchedState), refreshDelay));
   };
 
   view(watched);
-  setTimeout(refresh, refreshDelay);
+  setTimeout(() => refresh(watched), refreshDelay);
 };
 
 export default app;
