@@ -16,6 +16,8 @@ import makeUrlWithProxy from './makeUrlWithProxy.js';
 const refreshDelay = 5000;
 // const networkTimeout = 4000;
 
+let index = 0;
+
 const app = () => {
   const i18n = i18next.createInstance();
   i18n.init({
@@ -57,103 +59,24 @@ const app = () => {
   };
 
   const view = (watched) => {
-    const {
-      form, feeds, posts, modal,
-    } = watched;
-
-    const onModalHide = () => {
-      modal.active = false;
-    };
+    const { posts, modal } = watched;
 
     elements.header.textContent = i18n.t('form.header');
     elements.description.textContent = i18n.t('form.description');
     elements.formLabel.textContent = i18n.t('form.label');
     elements.formButton.textContent = i18n.t('form.submitName');
     elements.example.textContent = i18n.t('form.example');
-    elements.feedbackElement.textContent = form.feedback.map((message) => i18n.t(message)).join(',');
-    elements.urlInput.classList.remove('is-invalid');
-    elements.feedbackElement.classList.remove('text-success', 'text-danger');
-    if (form.state === 'invalid') {
-      elements.urlInput.classList.add('is-invalid');
-      elements.feedbackElement.classList.add('text-danger');
-    } else {
-      elements.feedbackElement.classList.add('text-success');
-    }
-
-    const getFeedLi = (item) => {
-      const name = document.createElement('h3');
-      name.classList.add('h6', 'm-0');
-      name.textContent = item.title;
-      const description = document.createElement('p');
-      description.classList.add('m-0', 'small', 'text-black-50');
-      description.textContent = item.description;
-      const li = document.createElement('li');
-      li.classList.add('list-group-item', 'border-0', 'border-end-0');
-      li.prepend(name, description);
-      return li;
-    };
-
     elements.feedsHeader.textContent = i18n.t('feeds.header');
-    elements.feedsList.innerHTML = '';
-    elements.feedsList.prepend(
-      ..._.sortBy(feeds, [(o) => -new Date(o.pubDate)]).map(getFeedLi),
-    );
-
-    const getPostLi = (item) => {
-      const a = document.createElement('a');
-      a.classList.add(item.visited ? 'fw-normal' : 'fw-bold');
-      a.setAttribute('href', item.link);
-      a.setAttribute('data-id', item.id);
-      a.setAttribute('target', '_blank');
-      a.setAttribute('rel', 'noopener noreferrer');
-      a.textContent = item.title;
-      const button = document.createElement('button');
-      button.classList.add('btn', 'btn-outline-primary', 'btn-sm');
-      button.value = i18n.t('posts.buttonShow');
-      button.setAttribute('type', 'button');
-      button.setAttribute('data-id', item.id);
-      button.setAttribute('data-bs-toggle', 'modal');
-      button.setAttribute('data-bs-target', '#modal');
-      button.setAttribute('data-bs-id', item.id);
-      button.setAttribute('data-bs-title', item.title);
-      button.setAttribute('data-bs-description', item.description);
-      button.setAttribute('data-bs-link', item.link);
-      button.textContent = i18n.t('posts.buttonShow');
-      const li = document.createElement('li');
-      li.classList.add(
-        'list-group-item',
-        'd-flex',
-        'justify-content-between',
-        'align-items-start',
-        'border-0',
-        'border-end-0',
-      );
-      li.prepend(a, button);
-      return li;
-    };
-
     elements.postsHeader.textContent = i18n.t('posts.header');
-    elements.postsList.innerHTML = '';
-    elements.postsList.prepend(
-      ..._.sortBy(posts, [(o) => -new Date(o.pubDate)]).map(getPostLi),
-    );
-
     elements.modalDiv.classList.add('modal', 'fade');
     elements.modalDiv.setAttribute('id', 'modal');
     elements.modalDiv.setAttribute('tabindex', '-1');
     elements.modalDiv.setAttribute('role', 'dialog');
     elements.modalDiv.setAttribute('aria-labelledby', 'modal');
-    if (modal.active && modal.postId) {
-      elements.modalDiv.classList.add('show');
-      elements.modalDiv.setAttribute('aria-modal', 'true');
-      elements.modalDiv.setAttribute('style', 'display: block;');
-    } else {
-      elements.modalDiv.setAttribute('aria-hidden', 'true');
-    }
     elements.modalLink.textContent = i18n.t('modal.readFull');
     elements.modalFooterHide.textContent = i18n.t('modal.hideModal');
     elements.closeModalButtons.forEach((button) => {
-      button.addEventListener('click', onModalHide);
+      button.addEventListener('click', () => { modal.active = false; });
     });
 
     elements.modalDiv.addEventListener('show.bs.modal', (event) => {
@@ -167,14 +90,101 @@ const app = () => {
       modalTitle.textContent = title;
       modalDescription.textContent = description;
       modalLink.setAttribute('href', link);
-      modal.postId = button.getAttribute('data-bs-id');
       modal.active = true;
-      const post = _.find(posts, (item) => item.id === modal.postId);
+      const post = _.find(posts, (item) => item.id === button.getAttribute('data-bs-id'));
       post.visited = true;
     });
   };
 
-  const watched = onChange(state, () => {
+  const watched = onChange(state, (path, value) => {
+    index += 1;
+    console.log('Object changed:', index);
+    console.log('path:', path);
+    console.log('value:', value);
+    switch (true) {
+      case /form\.state/.test(path):
+        elements.urlInput.classList.remove('is-invalid');
+        elements.feedbackElement.classList.remove('text-success', 'text-danger');
+        if (state.form.state === 'invalid') {
+          elements.urlInput.classList.add('is-invalid');
+          elements.feedbackElement.classList.add('text-danger');
+        } else {
+          elements.feedbackElement.classList.add('text-success');
+        }
+        break;
+      case /form\.feedback/.test(path):
+        elements.feedbackElement.textContent = state.form.feedback.map((message) => i18n.t(message)).join(',');
+        break;
+      case /feeds/.test(path):
+        elements.feedsList.innerHTML = '';
+        elements.feedsList.prepend(
+          ..._
+            .sortBy(state.feeds, [(o) => -new Date(o.pubDate)])
+            .map((item) => {
+              const name = document.createElement('h3');
+              name.classList.add('h6', 'm-0');
+              name.textContent = item.title;
+              const description = document.createElement('p');
+              description.classList.add('m-0', 'small', 'text-black-50');
+              description.textContent = item.description;
+              const li = document.createElement('li');
+              li.classList.add('list-group-item', 'border-0', 'border-end-0');
+              li.prepend(name, description);
+              return li;
+            }),
+        );
+        break;
+      case /posts/.test(path):
+        elements.postsList.innerHTML = '';
+        elements.postsList.prepend(
+          ..._
+            .sortBy(state.posts, [(o) => -new Date(o.pubDate)])
+            .map((item) => {
+              const a = document.createElement('a');
+              a.classList.add(item.visited ? 'fw-normal' : 'fw-bold');
+              a.setAttribute('href', item.link);
+              a.setAttribute('data-id', item.id);
+              a.setAttribute('target', '_blank');
+              a.setAttribute('rel', 'noopener noreferrer');
+              a.textContent = item.title;
+              const button = document.createElement('button');
+              button.classList.add('btn', 'btn-outline-primary', 'btn-sm');
+              button.value = i18n.t('posts.buttonShow');
+              button.setAttribute('type', 'button');
+              button.setAttribute('data-id', item.id);
+              button.setAttribute('data-bs-toggle', 'modal');
+              button.setAttribute('data-bs-target', '#modal');
+              button.setAttribute('data-bs-id', item.id);
+              button.setAttribute('data-bs-title', item.title);
+              button.setAttribute('data-bs-description', item.description);
+              button.setAttribute('data-bs-link', item.link);
+              button.textContent = i18n.t('posts.buttonShow');
+              const li = document.createElement('li');
+              li.classList.add(
+                'list-group-item',
+                'd-flex',
+                'justify-content-between',
+                'align-items-start',
+                'border-0',
+                'border-end-0',
+              );
+              li.prepend(a, button);
+              return li;
+            }),
+        );
+        break;
+      case /modal/.test(path):
+        if (state.modal.active) {
+          elements.modalDiv.classList.add('show');
+          elements.modalDiv.setAttribute('aria-modal', 'true');
+          elements.modalDiv.setAttribute('style', 'display: block;');
+        } else {
+          elements.modalDiv.setAttribute('aria-hidden', 'true');
+        }
+        break;
+      default:
+    }
+
     view(watched);
   });
 
