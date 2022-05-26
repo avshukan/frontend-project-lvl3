@@ -58,51 +58,13 @@ const app = () => {
     closeModalButtons: document.querySelectorAll('#modal button'),
   };
 
-  const view = (watched) => {
-    const { posts, modal } = watched;
-
-    elements.header.textContent = i18n.t('form.header');
-    elements.description.textContent = i18n.t('form.description');
-    elements.formLabel.textContent = i18n.t('form.label');
-    elements.formButton.textContent = i18n.t('form.submitName');
-    elements.example.textContent = i18n.t('form.example');
-    elements.feedsHeader.textContent = i18n.t('feeds.header');
-    elements.postsHeader.textContent = i18n.t('posts.header');
-    elements.modalDiv.classList.add('modal', 'fade');
-    elements.modalDiv.setAttribute('id', 'modal');
-    elements.modalDiv.setAttribute('tabindex', '-1');
-    elements.modalDiv.setAttribute('role', 'dialog');
-    elements.modalDiv.setAttribute('aria-labelledby', 'modal');
-    elements.modalLink.textContent = i18n.t('modal.readFull');
-    elements.modalFooterHide.textContent = i18n.t('modal.hideModal');
-    elements.closeModalButtons.forEach((button) => {
-      button.addEventListener('click', () => { modal.active = false; });
-    });
-
-    elements.modalDiv.addEventListener('show.bs.modal', (event) => {
-      const button = event.relatedTarget;
-      const title = button.getAttribute('data-bs-title');
-      const description = button.getAttribute('data-bs-description');
-      const link = button.getAttribute('data-bs-link');
-      const modalTitle = elements.modalDiv.querySelector('.modal-title');
-      const modalDescription = elements.modalDiv.querySelector('.modal-body');
-      const modalLink = elements.modalDiv.querySelector('a');
-      modalTitle.textContent = title;
-      modalDescription.textContent = description;
-      modalLink.setAttribute('href', link);
-      modal.active = true;
-      const post = _.find(posts, (item) => item.id === button.getAttribute('data-bs-id'));
-      post.visited = true;
-    });
-  };
-
   const watched = onChange(state, (path, value) => {
     index += 1;
     console.log('Object changed:', index);
     console.log('path:', path);
     console.log('value:', value);
     switch (true) {
-      case /form\.state/.test(path):
+      case /^form\.state$/.test(path):
         elements.urlInput.classList.remove('is-invalid');
         elements.feedbackElement.classList.remove('text-success', 'text-danger');
         if (state.form.state === 'invalid') {
@@ -112,10 +74,10 @@ const app = () => {
           elements.feedbackElement.classList.add('text-success');
         }
         break;
-      case /form\.feedback/.test(path):
+      case /^form\.feedback$/.test(path):
         elements.feedbackElement.textContent = state.form.feedback.map((message) => i18n.t(message)).join(',');
         break;
-      case /feeds/.test(path):
+      case /^feeds$/.test(path):
         elements.feedsList.innerHTML = '';
         elements.feedsList.prepend(
           ..._
@@ -134,7 +96,7 @@ const app = () => {
             }),
         );
         break;
-      case /posts/.test(path):
+      case /^posts/.test(path):
         elements.postsList.innerHTML = '';
         elements.postsList.prepend(
           ..._
@@ -173,7 +135,7 @@ const app = () => {
             }),
         );
         break;
-      case /modal/.test(path):
+      case /^modal$/.test(path):
         if (state.modal.active) {
           elements.modalDiv.classList.add('show');
           elements.modalDiv.setAttribute('aria-modal', 'true');
@@ -184,8 +146,6 @@ const app = () => {
         break;
       default:
     }
-
-    view(watched);
   });
 
   const onSubmit = (event) => {
@@ -271,8 +231,61 @@ const app = () => {
       .finally(() => setTimeout(() => refresh(watchedState), refreshDelay));
   };
 
-  view(watched);
   setTimeout(() => refresh(watched), refreshDelay);
+
+  const view = (watchedState, documentElements) => {
+    const { posts, modal } = watchedState;
+
+    const {
+      header,
+      description,
+      formLabel,
+      formButton,
+      example,
+      feedsHeader,
+      postsHeader,
+      modalDiv,
+      modalLink,
+      modalFooterHide,
+      closeModalButtons,
+    } = documentElements;
+
+    header.textContent = i18n.t('form.header');
+    description.textContent = i18n.t('form.description');
+    formLabel.textContent = i18n.t('form.label');
+    formButton.textContent = i18n.t('form.submitName');
+    example.textContent = i18n.t('form.example');
+    feedsHeader.textContent = i18n.t('feeds.header');
+    postsHeader.textContent = i18n.t('posts.header');
+    modalDiv.classList.add('modal', 'fade');
+    modalDiv.setAttribute('id', 'modal');
+    modalDiv.setAttribute('tabindex', '-1');
+    modalDiv.setAttribute('role', 'dialog');
+    modalDiv.setAttribute('aria-labelledby', 'modal');
+    modalLink.textContent = i18n.t('modal.readFull');
+    modalFooterHide.textContent = i18n.t('modal.hideModal');
+    closeModalButtons.forEach((button) => {
+      button.addEventListener('click', () => { modal.active = false; });
+    });
+
+    modalDiv.addEventListener('show.bs.modal', (event) => {
+      const button = event.relatedTarget;
+      const srcTitle = button.getAttribute('data-bs-title');
+      const srcDescription = button.getAttribute('data-bs-description');
+      const srcLink = button.getAttribute('data-bs-link');
+      const dstTitle = modalDiv.querySelector('.modal-title');
+      const dstDescription = modalDiv.querySelector('.modal-body');
+      const dstLink = modalDiv.querySelector('a');
+      dstTitle.textContent = srcTitle;
+      dstDescription.textContent = srcDescription;
+      dstLink.setAttribute('href', srcLink);
+      modal.active = true;
+      const post = _.find(posts, (item) => item.id === button.getAttribute('data-bs-id'));
+      post.visited = true;
+    });
+  };
+
+  view(watched, elements);
 };
 
 export default app;
