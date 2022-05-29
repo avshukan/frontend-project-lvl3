@@ -16,7 +16,15 @@ import makeUrlWithProxy from './makeUrlWithProxy.js';
 const refreshDelay = 5000;
 // const networkTimeout = 4000;
 
-let index = 0;
+yup.setLocale({
+  mixed: {
+    default: 'field_invalid',
+    required: 'field_required',
+  },
+  string: {
+    url: 'feedback.urlIsInvalid',
+  },
+});
 
 const app = () => {
   const i18n = i18next.createInstance();
@@ -59,23 +67,20 @@ const app = () => {
   };
 
   const watched = onChange(state, (path, value) => {
-    index += 1;
-    console.log('Object changed:', index);
-    console.log('path:', path);
-    console.log('value:', value);
     switch (true) {
       case /^form\.state$/.test(path):
         elements.urlInput.classList.remove('is-invalid');
         elements.feedbackElement.classList.remove('text-success', 'text-danger');
-        if (state.form.state === 'invalid') {
+        if (value === 'invalid') {
           elements.urlInput.classList.add('is-invalid');
           elements.feedbackElement.classList.add('text-danger');
-        } else {
+        } else if (value === 'valid') {
           elements.feedbackElement.classList.add('text-success');
+          elements.formElement.reset();
         }
         break;
       case /^form\.feedback$/.test(path):
-        elements.feedbackElement.textContent = state.form.feedback.map((message) => i18n.t(message)).join(',');
+        elements.feedbackElement.textContent = value.map((message) => i18n.t(message)).join(',');
         break;
       case /^feeds$/.test(path):
         elements.feedsList.innerHTML = '';
@@ -153,15 +158,6 @@ const app = () => {
     const { target } = event;
     const formData = new FormData(target);
     const { form, feeds, posts } = watched;
-    yup.setLocale({
-      mixed: {
-        default: 'field_invalid',
-        required: 'field_required',
-      },
-      string: {
-        url: 'feedback.urlIsInvalid',
-      },
-    });
     const userSchema = object({
       url: string()
         .url()
@@ -169,7 +165,8 @@ const app = () => {
         .notOneOf(feeds.map(({ url }) => url), 'feedback.rssAlreadyExists'),
     });
     const url = formData.get('url');
-    userSchema.validate({ url })
+    userSchema
+      .validate({ url })
       .then(() => {
         form.feedback = [];
         form.state = 'pending';
