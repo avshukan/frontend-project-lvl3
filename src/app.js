@@ -13,10 +13,10 @@ import getRssXml from './getRssXml.js';
 import getRssContent from './getRssContent.js';
 import makeUrlWithProxy from './makeUrlWithProxy.js';
 import initView from './initView.js';
-// import rejectSlowNetwork from './rejectSlowNetwork.js';
+import rejectSlowNetwork from './rejectSlowNetwork.js';
 
 const refreshDelay = 5000;
-// const networkTimeout = 4000;
+const networkTimeout = 4000;
 
 yup.setLocale({
   mixed: {
@@ -87,7 +87,8 @@ const app = () => {
       .then(() => {
         form.feedback = [];
         form.state = 'pending';
-        return getRssXml(makeUrlWithProxy(url));
+        return Promise.race([getRssXml(makeUrlWithProxy(url)), rejectSlowNetwork(networkTimeout)]);
+        // return getRssXml(makeUrlWithProxy(url));
       })
       // .then(() => Promise.race([getRssData(url), rejectSlowNetwork(networkTimeout)]))
       .then((data) => {
