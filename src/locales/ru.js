@@ -14,7 +14,7 @@ export default {
     },
     posts: {
       header: 'Посты',
-      buttonShow: 'Показать',
+      buttonShow: 'Просмотр',
     },
     feeds: {
       header: 'Фиды',
