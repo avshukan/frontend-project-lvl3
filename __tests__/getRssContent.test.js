@@ -4,9 +4,12 @@ import { test, expect, describe } from '@jest/globals';
 import { fileURLToPath } from 'url';
 import getRssContent from '../src/getRssContent';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const getFixturesPath = (filename) => path.resolve(__dirname, '..', '__fixtures__', filename);
+const getFixturesPath = (filename) => path.resolve(
+  dirname(fileURLToPath(import.meta.url)),
+  '..',
+  '__fixtures__',
+  filename,
+);
 const readFile = (filename) => fs.readFileSync(getFixturesPath(filename), 'utf-8');
 
 describe('getRssContent', () => {

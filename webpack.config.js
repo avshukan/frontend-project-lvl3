@@ -4,8 +4,6 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 const mode = process.env.NODE_ENV || 'development';
 
 export default {
@@ -13,7 +11,7 @@ export default {
   entry: path.resolve('.', 'src', 'index.js'),
   output: {
     filename: 'main.js',
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(dirname(fileURLToPath(import.meta.url)), 'dist'),
   },
   module: {
     rules: [
