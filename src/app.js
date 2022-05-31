@@ -13,10 +13,8 @@ import getRssXml from './getRssXml.js';
 import getRssContent from './getRssContent.js';
 import makeUrlWithProxy from './makeUrlWithProxy.js';
 import initView from './initView.js';
-import rejectSlowNetwork from './rejectSlowNetwork.js';
 
 const refreshDelay = 5000;
-const networkTimeout = 4000;
 
 yup.setLocale({
   mixed: {
@@ -87,10 +85,8 @@ const app = () => {
       .then(() => {
         form.feedback = [];
         form.state = 'pending';
-        return Promise.race([getRssXml(makeUrlWithProxy(url)), rejectSlowNetwork(networkTimeout)]);
-        // return getRssXml(makeUrlWithProxy(url));
+        return getRssXml(makeUrlWithProxy(url));
       })
-      // .then(() => Promise.race([getRssData(url), rejectSlowNetwork(networkTimeout)]))
       .then((data) => {
         const { rssFeed, rssPosts } = getRssContent(data);
         const feedId = uuid();
@@ -117,7 +113,7 @@ const app = () => {
           form.feedback = [...error.errors];
         } else if (error instanceof TypeError) {
           form.feedback = ['feedback.rssIsInvalid'];
-        } else if (error.name === 'NetworkError') {
+        } else if (error.message === 'Network Error') {
           form.feedback = ['feedback.networkError'];
         } else {
           form.feedback = [error.message];
