@@ -1,12 +1,13 @@
+import axios from 'axios';
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
-import getRssXml from './getRssXml.js';
 import getRssContent from './getRssContent.js';
 import makeUrlWithProxy from './makeUrlWithProxy.js';
 
 const refresh = (watchedState, refreshDelay) => {
   const { feeds, posts } = watchedState;
-  const promises = feeds.map((feed) => getRssXml(makeUrlWithProxy(feed.url))
+  const promises = feeds.map((feed) => axios.get(makeUrlWithProxy(feed.url))
+    .then((response) => response.data.contents)
     .then((data) => {
       const { rssPosts } = getRssContent(data);
       const diff = _.differenceBy(rssPosts, posts, 'guid');
