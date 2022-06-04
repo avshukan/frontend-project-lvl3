@@ -23,7 +23,9 @@
   },
   "homepage": "https://github.com/avshukan/frontend-project-lvl3#readme",
   "jest": {
-    "setupFilesAfterEnv": ["./node_modules/jest-xml-matcher/index.js"]
+    "setupFilesAfterEnv": [
+      "./node_modules/jest-xml-matcher/index.js"
+    ]
   },
   "devDependencies": {
     "@jest/globals": "^27.5.1",
@@ -37,7 +39,6 @@
     "jest": "^27.5.1",
     "jest-xml-matcher": "^1.2.0",
     "mini-css-extract-plugin": "^2.6.0",
-    "nock": "^13.2.4",
     "webpack": "^5.72.0",
     "webpack-cli": "^4.9.2",
     "webpack-dev-server": "^4.8.1"

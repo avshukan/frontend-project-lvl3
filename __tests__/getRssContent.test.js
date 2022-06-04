@@ -13,9 +13,19 @@ const getFixturesPath = (filename) => path.resolve(
 const readFile = (filename) => fs.readFileSync(getFixturesPath(filename), 'utf-8');
 
 describe('getRssContent', () => {
-  test('getRssContent', () => {
+  test('success', () => {
     const xml = readFile('rss.xml');
     const expected = JSON.parse(readFile('rss.json'));
     expect(getRssContent(xml)).toMatchObject(expected);
+  });
+
+  test('error', () => {
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+    <rss version="2.0">
+        <channel>
+            <title>Новые уроки на Хекслете</title>
+        </channel>
+    </rss>`;
+    expect(() => getRssContent(xml)).toThrowError('feedback.rssIsInvalid');
   });
 });
