@@ -10,22 +10,22 @@ import initView from './initView.js';
 
 const refreshDelay = 5000;
 
-yup.setLocale({
-  mixed: {
-    default: 'field_invalid',
-    required: 'field_required',
-  },
-  string: {
-    url: 'feedback.urlIsInvalid',
-  },
-});
-
 const app = () => {
   const i18n = i18next.createInstance();
   i18n.init({
     lng: 'ru',
     debug: true,
     resources: locales,
+  });
+
+  yup.setLocale({
+    mixed: {
+      default: 'field_invalid',
+      required: 'field_required',
+    },
+    string: {
+      url: 'feedback.urlIsInvalid',
+    },
   });
 
   const state = {
