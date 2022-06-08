@@ -86,11 +86,6 @@ export default (watchedState, documentElements, i18n) => {
   example.textContent = i18n.t('form.example');
   feedsHeader.textContent = i18n.t('feeds.header');
   postsHeader.textContent = i18n.t('posts.header');
-  modalDiv.classList.add('modal', 'fade');
-  modalDiv.setAttribute('id', 'modal');
-  modalDiv.setAttribute('tabindex', '-1');
-  modalDiv.setAttribute('role', 'dialog');
-  modalDiv.setAttribute('aria-labelledby', 'modal');
   modalLink.textContent = i18n.t('modal.readFull');
   modalFooterHide.textContent = i18n.t('modal.hideModal');
   closeModalButtons.forEach((button) => {
