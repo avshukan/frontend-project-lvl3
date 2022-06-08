@@ -43,9 +43,8 @@ export default (watchedState, documentElements, i18n) => {
         form.state = 'pending';
         return axios.get(makeUrlWithProxy(url));
       })
-      .then((response) => response.data.contents)
-      .then((data) => {
-        const { rssFeed, rssPosts } = getRssContent(data);
+      .then((response) => {
+        const { rssFeed, rssPosts } = getRssContent(response.data.contents);
         const feedId = uuid();
         feeds.push({
           id: feedId,

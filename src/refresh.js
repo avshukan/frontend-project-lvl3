@@ -7,9 +7,8 @@ import makeUrlWithProxy from './makeUrlWithProxy.js';
 const refresh = (watchedState, refreshDelay) => {
   const { feeds, posts } = watchedState;
   const promises = feeds.map((feed) => axios.get(makeUrlWithProxy(feed.url))
-    .then((response) => response.data.contents)
-    .then((data) => {
-      const { rssPosts } = getRssContent(data);
+    .then((response) => {
+      const { rssPosts } = getRssContent(response.data.contents);
       const diff = _.differenceBy(rssPosts, posts, 'guid');
       if (!_.isEmpty(diff)) {
         const newPosts = diff.map((post) => _.merge(
