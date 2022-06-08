@@ -26,6 +26,8 @@ export default (watchedState, documentElements, i18n) => {
   } = documentElements;
 
   const onSubmit = (event) => {
+    form.feedback = [];
+    form.state = 'pending';
     event.preventDefault();
     const { target } = event;
     const formData = new FormData(target);
@@ -38,11 +40,7 @@ export default (watchedState, documentElements, i18n) => {
     const url = formData.get('url');
     userSchema
       .validate({ url })
-      .then(() => {
-        form.feedback = [];
-        form.state = 'pending';
-        return axios.get(makeUrlWithProxy(url));
-      })
+      .then(() => axios.get(makeUrlWithProxy(url)))
       .then((response) => {
         const { rssFeed, rssPosts } = getRssContent(response.data.contents);
         const feedId = uuid();
