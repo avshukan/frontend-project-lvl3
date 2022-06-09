@@ -92,17 +92,9 @@ export default (watchedState, documentElements, i18n) => {
 
   modalDiv.addEventListener('show.bs.modal', (event) => {
     const button = event.relatedTarget;
-    const srcTitle = button.getAttribute('data-bs-title');
-    const srcDescription = button.getAttribute('data-bs-description');
-    const srcLink = button.getAttribute('data-bs-link');
-    const dstTitle = modalDiv.querySelector('.modal-title');
-    const dstDescription = modalDiv.querySelector('.modal-body');
-    const dstLink = modalDiv.querySelector('a');
-    dstTitle.textContent = srcTitle;
-    dstDescription.textContent = srcDescription;
-    dstLink.setAttribute('href', srcLink);
-    modal.active = true;
     const post = _.find(posts, (item) => item.id === button.getAttribute('data-bs-id'));
     post.visited = true;
+    modal.postId = button.getAttribute('data-bs-id');
+    modal.active = true;
   });
 };
