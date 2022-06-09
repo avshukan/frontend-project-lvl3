@@ -25,7 +25,7 @@ export default (watchedState, documentElements, i18n) => {
     closeModalButtons,
   } = documentElements;
 
-  const onSubmit = (event) => {
+  const onSubmitFormHandler = (event) => {
     form.feedback = [];
     form.state = 'pending';
     event.preventDefault();
@@ -75,7 +75,15 @@ export default (watchedState, documentElements, i18n) => {
       });
   };
 
-  formElement.addEventListener('submit', (event) => onSubmit(event));
+  const onShowModalHandler = (event) => {
+    const button = event.relatedTarget;
+    const post = _.find(posts, (item) => item.id === button.getAttribute('data-bs-id'));
+    post.visited = true;
+    modal.postId = button.getAttribute('data-bs-id');
+    modal.active = true;
+  };
+
+  const onHideModalHandler = () => { modal.active = false; };
 
   header.textContent = i18n.t('form.header');
   description.textContent = i18n.t('form.description');
@@ -86,15 +94,7 @@ export default (watchedState, documentElements, i18n) => {
   postsHeader.textContent = i18n.t('posts.header');
   modalLink.textContent = i18n.t('modal.readFull');
   modalFooterHide.textContent = i18n.t('modal.hideModal');
-  closeModalButtons.forEach((button) => {
-    button.addEventListener('click', () => { modal.active = false; });
-  });
-
-  modalDiv.addEventListener('show.bs.modal', (event) => {
-    const button = event.relatedTarget;
-    const post = _.find(posts, (item) => item.id === button.getAttribute('data-bs-id'));
-    post.visited = true;
-    modal.postId = button.getAttribute('data-bs-id');
-    modal.active = true;
-  });
+  formElement.addEventListener('submit', (event) => onSubmitFormHandler(event));
+  modalDiv.addEventListener('show.bs.modal', onShowModalHandler);
+  closeModalButtons.forEach((button) => { button.addEventListener('click', onHideModalHandler); });
 };
