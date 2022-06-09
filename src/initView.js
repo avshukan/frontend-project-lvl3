@@ -83,7 +83,10 @@ export default (watchedState, documentElements, i18n) => {
     modal.active = true;
   };
 
-  const onHideModalHandler = () => { modal.active = false; };
+  const onHideModalHandler = () => {
+    modal.postId = null;
+    modal.active = false;
+  };
 
   header.textContent = i18n.t('form.header');
   description.textContent = i18n.t('form.description');

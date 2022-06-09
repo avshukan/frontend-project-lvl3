@@ -98,13 +98,12 @@ export default (state, documentElements, i18n) => onChange(state, (path, value) 
   }
 
   if (path === 'modal.postId') {
-    const post = _.find(state.posts, (item) => item.id === value);
-    const { title, description, link } = post;
     const dstTitle = modalDiv.querySelector('.modal-title');
     const dstDescription = modalDiv.querySelector('.modal-body');
     const dstLink = modalDiv.querySelector('a');
-    dstTitle.textContent = title;
-    dstDescription.textContent = description;
-    dstLink.setAttribute('href', link);
+    const post = _.find(state.posts, (item) => item.id === value);
+    dstTitle.textContent = post?.title ?? '';
+    dstDescription.textContent = post?.description ?? '';
+    dstLink.setAttribute('href', post?.link ?? '#');
   }
 });
